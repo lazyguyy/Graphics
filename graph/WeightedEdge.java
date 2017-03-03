@@ -12,8 +12,14 @@ public class WeightedEdge {
         this.weight = weight;
     }
 
+    public WeightedEdge(WeightedEdge edge) {
+        this.from = edge.from;
+        this.to = edge.to;
+        this.weight = edge.weight;
+    }
+
     @Override
     public String toString() {
-        return String.format("(%d, %d) -> %f", from, to, weight);
+        return String.format("(%d, %d): %f", from, to, weight);
     }
 }

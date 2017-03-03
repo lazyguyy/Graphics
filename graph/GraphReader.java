@@ -25,7 +25,7 @@ public class GraphReader implements GraphIterable, Iterator<WeightedEdge> {
             vertexCount = Integer.parseInt(firstLine.substring(1).trim());
             vertices = IntStream.range(0, vertexCount).mapToObj(Integer::toString).toArray(String[]::new);
         } else {
-            vertices = firstLine.split("\\w+");
+            vertices = firstLine.split("\\s+");
             vertexCount = vertices.length;
         }
         vertexNames = IntStream.range(0, vertexCount).mapToObj(i -> i)
@@ -35,7 +35,7 @@ public class GraphReader implements GraphIterable, Iterator<WeightedEdge> {
 
     private String read() throws IOException {
         nextLine = reader.readLine();
-        while (!nextLine.isEmpty())
+        while (nextLine != null && nextLine.isEmpty())
             nextLine = reader.readLine();
         return nextLine;
     }
@@ -56,7 +56,7 @@ public class GraphReader implements GraphIterable, Iterator<WeightedEdge> {
         if (!hasNext())
             throw new NoSuchElementException("No more elements");
 
-        String[] info = nextLine.split("\\w+");
+        String[] info = nextLine.split("\\s+");
         if (info.length < 2) {
             closeStream();
             throw new NoSuchElementException("Invalid input format");
@@ -70,7 +70,7 @@ public class GraphReader implements GraphIterable, Iterator<WeightedEdge> {
         if (nextLine == null)
             closeStream();
 
-        int weight = info.length > 2 ? Integer.parseInt(info[2]) : 1;
+        double weight = info.length > 2 ? Double.parseDouble(info[2]) : 1;
         return new WeightedEdge(vertexNames.get(info[0]), vertexNames.get(info[1]), weight);
     }
 
@@ -80,7 +80,7 @@ public class GraphReader implements GraphIterable, Iterator<WeightedEdge> {
     }
 
     @Override
-    public String[] vertices() {
+    public String[] vertexNames() {
         return vertices;
     }
 
