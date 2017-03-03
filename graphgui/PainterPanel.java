@@ -65,10 +65,10 @@ public class PainterPanel extends JPanel{
                     gr.setColor(edge.getColor());
                     gr.drawLine((int)coordinates[e.from].x, (int)coordinates[e.from].y, (int)coordinates[e.to].x, (int)coordinates[e.to].y);
                     Vector2D direction = coordinates[e.to].diff(coordinates[e.from]);
-                    double length = direction.distance();
+                    double length = direction.absolute();
                     direction = direction.scale(VERTEX_SIZE);
                     gr.drawString(edge.getValue(), (int)(coordinates[e.from].x + direction.scale(VERTEX_SIZE + MIN_DISTANCE/2).x), (int)(coordinates[e.from].y + direction.scale(VERTEX_SIZE + MIN_DISTANCE/2).y));
-                    GraphicsHelper.drawArrowCap(gr, coordinates[e.to].diff(direction), direction);
+                    GraphicsHelper.drawArrowTip(gr, coordinates[e.to].diff(direction), direction);
                 });
                 edges.add(edge);
                 addMouseMotionListener(edge);
