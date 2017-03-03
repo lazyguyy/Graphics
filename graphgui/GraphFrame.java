@@ -10,6 +10,7 @@ public class GraphFrame extends JFrame {
         super("Graphics");
         setBackground(Color.white);
         PainterPanel p = new PainterPanel(g, getBackground());
+        p.init();
         add(p);
         pack();
         addWindowListener(new WindowAdapter() {
