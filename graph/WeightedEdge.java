@@ -19,6 +19,6 @@ public class WeightedEdge {
 
     @Override
     public String toString() {
-        return String.format("(%d, %d): %f", from, to, weight);
+        return String.format("(%d, %d) %s", from, to, weight);
     }
 }

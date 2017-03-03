@@ -7,6 +7,8 @@ public class Testing {
 
     public static void main(String[] args) throws IOException {
         String source = "A B\nA B -2\nB A -5";
-        System.out.println(GraphFactory.createMatrixGraph(new GraphReader(new StringReader(source))));
+        for (WeightedEdge e : GraphFactory.createMatrixGraph(new GraphReader(new StringReader(source)))) {
+            System.out.println(e);
+        }
     }
 }

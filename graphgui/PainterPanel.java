@@ -41,7 +41,7 @@ public class PainterPanel{
                 gr.setColor(Color.black);
                 gr.drawString(vertex.getValue(), (int)x - VERTEX_SIZE, (int)y - VERTEX_SIZE - 10);
             });
-            for (WeightedEdge e : g.adjacentEdges(i)) {
+            for (WeightedEdge e : g.adjacency(i)) {
                 Shape edge = new Shape("" + e.weight, null);
                 edge.setPainter(gr -> {
                     gr.setColor(edge.getColor());
