@@ -95,7 +95,7 @@ abstract class AbstractGraph implements Graph {
                 edges[e.to] = String.format("%8s ", e.weight);
             }
             for (String s : edges) {
-                sb.append(s == null ? "" : s);
+                sb.append(s == null ? "       - " : s);
             }
             sb.append("\n");
         }
