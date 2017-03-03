@@ -23,7 +23,7 @@ public class Shape implements MouseMotionListener {
     }
 
     public void draw(Graphics g) {
-        painter.consume(g);
+        painter.accept(g);
         if (hovered && hover != null)
             hover.draw(g);
     }
@@ -41,7 +41,8 @@ public class Shape implements MouseMotionListener {
             hovered = model.contains(e.getX(), e.getY());
     }
 
-    public void MouseDragged(Mouse Event a) {
-
-    }
+	public void mouseDragged(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
 }

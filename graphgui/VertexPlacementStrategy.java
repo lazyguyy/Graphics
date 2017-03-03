@@ -5,33 +5,35 @@ import graph.*;
 public abstract class VertexPlacementStrategy {
     protected Graph g;
     protected boolean changed;
-    private final double MIN_DISTANCE = 50, MAX_DISTANCE = 200, DISTANCE_OFFSET_FACTOR = 1.2;
-    private final int VERTEX_SIZE = 20, CANVAS_SIZE = 1000;
+    protected final double MIN_DISTANCE, MAX_DISTANCE, DISTANCE_OFFSET_FACTOR;
+    protected final int VERTEX_SIZE, CANVAS_SIZE;
 
 
-    public VertextPlacementStrategy(Graph g, double MIN_DISTANCE, MAX_DISTANCE, DISTANCE_OFFSET_FACTOR, int CANVAS_SIZE) {
+    public VertexPlacementStrategy(Graph g, double MIN_DISTANCE, double MAX_DISTANCE, double DISTANCE_OFFSET_FACTOR, int VERTEX_SIZE, int CANVAS_SIZE) {
         this.g = g;
         this.MIN_DISTANCE = MIN_DISTANCE;
         this.MAX_DISTANCE = MAX_DISTANCE;
         this.DISTANCE_OFFSET_FACTOR = DISTANCE_OFFSET_FACTOR;
+        this.VERTEX_SIZE = VERTEX_SIZE;
         this.CANVAS_SIZE = CANVAS_SIZE;
     }
     public double value(Tuple[] coordinates) {
-        double value;
+        double value = 0;
         for (int i = 0; i < g.vertexCount(); i++) {
             for (int j = i + 1; j < g.vertexCount(); j++) {
-                value += distance(i, j);
+                value += distance(i, j, coordinates);
             }
         }
+        return value;
     }
-    public abstract double adjustPlacements(Tuple[] coordinates)
+    public abstract void adjustPlacements(Tuple[] coordinates);
     public boolean hasChanged() {
         return changed;
     }
 
-    protected double distance(int x, int y) {
-        double distance;
-        double current = x.squaredEuclidian(y);
+    protected double distance(int x, int y, Tuple[] coordinates) {
+        double distance = 0;
+        double current = coordinates[x].squaredEuclidian(coordinates[y]);
         if (g.hasEdge(x, y)) {
             distance += Math.abs(scaledSigmoid(g.edge(x, y).weight, MIN_DISTANCE, MAX_DISTANCE) - current);
         }
@@ -48,7 +50,7 @@ public abstract class VertexPlacementStrategy {
     }
 
     protected double sigmoid(double x) {
-        return 1 / (1 + Math.pow(Math.e, -x));
+        return 1 / (1 + Math.pow(Math.E, -x));
     }
 
     protected double scaledSigmoid(double x, double min, double max) {

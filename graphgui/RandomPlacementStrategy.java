@@ -3,8 +3,8 @@ package graphgui;
 import graph.*;
 
 public class RandomPlacementStrategy extends VertexPlacementStrategy {
-    public RandomPlacementStrategy(Graph g, double MIN_DISTANCE, MAX_DISTANCE, DISTANCE_OFFSET_FACTOR, int CANVAS_SIZE) {
-        super(g, MIN_DISTANCE, MAX_DISTANCE, DISTANCE_OFFSET_FACTOR, CANVAS_SIZE);
+    public RandomPlacementStrategy(Graph g, double MIN_DISTANCE, double MAX_DISTANCE, double DISTANCE_OFFSET_FACTOR, int VERTEX_SIZE, int CANVAS_SIZE) {
+        super(g, MIN_DISTANCE, MAX_DISTANCE, DISTANCE_OFFSET_FACTOR, VERTEX_SIZE, CANVAS_SIZE);
     }
 
     public void adjustPlacements(Tuple[] coordinates) {
@@ -19,8 +19,8 @@ public class RandomPlacementStrategy extends VertexPlacementStrategy {
             for (int i = 0; i < coordinates.length; i++) {
                 int x = (int)Math.random()*CANVAS_SIZE;
                 int y = (int)Math.random()*CANVAS_SIZE;
-                Tuple[i].x = x;
-                Tuple[i].y = y;
+                coordinates[i].x = x;
+                coordinates[i].y = y;
             }            
         }
     }

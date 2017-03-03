@@ -3,7 +3,7 @@ package graphgui;
 public class Tuple {
     public double x, y;
 
-    public class Tuple(double x, double y) {
+    public Tuple(double x, double y) {
         this.x = x;
         this.y = y;
     }
