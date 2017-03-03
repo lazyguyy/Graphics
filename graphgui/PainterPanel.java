@@ -1,22 +1,30 @@
 package graphgui;
+
 import graph.*;
+import javax.swing.*;
 import java.util.*;
 import java.awt.*;
 
-public class PainterPanel{
+public class PainterPanel extends JPanel{
     private final double MIN_DISTANCE = 50, MAX_DISTANCE = 200, DISTANCE_OFFSET_FACTOR = 1.2;
     private final int VERTEX_SIZE = 20, CANVAS_SIZE = 1000;
     private Graph g;
-    private Tuple[] coordinates;
+    private Vector2D[] coordinates;
     private VertexPlacementStrategy strategy;
-    private ArrayList<Shape> shapes;
-
-    public PainterPanel(Graph g) {
-        g = GraphFactory.createListGraph(g);
+    private ArrayList<Shape> edges;
+    private ArrayList<Shape> vertices;
+    private Color backgroundColor;
+    private boolean stop;
+    
+    public PainterPanel(Graph g, Color backgroundColor) {
+        this.g = GraphFactory.createListGraph(g);
+        this.backgroundColor = backgroundColor;
+        setPreferredSize(new Dimension(CANVAS_SIZE, CANVAS_SIZE));
         strategy = new RandomPlacementStrategy(g, MIN_DISTANCE, MAX_DISTANCE, DISTANCE_OFFSET_FACTOR, VERTEX_SIZE, CANVAS_SIZE);
         new Thread(() -> {
             constructGraphShapes();
-            while (true) {
+            while (!stop) {
+            	repaint();
                 try {
                     Thread.sleep(100);
                 } catch (InterruptedException e) {
@@ -27,7 +35,12 @@ public class PainterPanel{
     }
 
     private void constructGraphShapes() {
-        shapes = new ArrayList<Shape>();
+        edges = new ArrayList<Shape>();
+        vertices = new ArrayList<Shape>();
+        coordinates = new Vector2D[g.vertexCount()];
+        for (int i = 0; i < coordinates.length; i++) {
+        	coordinates[i] = new Vector2D(Math.random()*(CANVAS_SIZE -  2*VERTEX_SIZE) + VERTEX_SIZE, Math.random()*(CANVAS_SIZE -  2*VERTEX_SIZE) + VERTEX_SIZE);
+        }
         while (strategy.hasChanged()) {
             strategy.adjustPlacements(coordinates);
         }
@@ -36,20 +49,41 @@ public class PainterPanel{
             double x = coordinates[i].x;
             double y = coordinates[i].y;
             vertex.setPainter(gr -> {
+            	gr.setColor(backgroundColor);
+            	gr.fillOval((int)x - VERTEX_SIZE, (int)y - VERTEX_SIZE, VERTEX_SIZE * 2, VERTEX_SIZE * 2);
                 gr.setColor(vertex.getColor());
                 gr.drawOval((int)x - VERTEX_SIZE, (int)y - VERTEX_SIZE, VERTEX_SIZE * 2, VERTEX_SIZE * 2);
                 gr.setColor(Color.black);
-                gr.drawString(vertex.getValue(), (int)x - VERTEX_SIZE, (int)y - VERTEX_SIZE - 10);
+                gr.drawString(vertex.getValue(), (int)x, (int)y);
             });
+            addMouseMotionListener(vertex);
+            vertices.add(vertex);
+            //Add all the edges
             for (WeightedEdge e : g.adjacentEdges(i)) {
                 Shape edge = new Shape("" + e.weight, null);
                 edge.setPainter(gr -> {
                     gr.setColor(edge.getColor());
                     gr.drawLine((int)coordinates[e.from].x, (int)coordinates[e.from].y, (int)coordinates[e.to].x, (int)coordinates[e.to].y);
+                    Vector2D direction = coordinates[e.to].diff(coordinates[e.from]);
+                    GraphicsHelper.drawArrowCap(gr, coordinates[e.to].diff(direction.scale(VERTEX_SIZE)), direction);
                 });
-                shapes.add(edge);
+                edges.add(edge);
+                addMouseMotionListener(edge);
             }
-            shapes.add(vertex);
         }
+    }
+    public void stop() {
+    	stop = true;
+    }
+    public void paint(Graphics g) {
+    	if (vertices.size() == 0) {
+    		g.drawString("Calculating optimal alignment", 50, 50);
+    	}
+    	for (Shape e : edges) {
+    		e.draw(g);
+    	}
+    	for (Shape v : vertices) {
+    		v.draw(g);
+    	}
     }
 }

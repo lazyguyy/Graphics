@@ -16,8 +16,9 @@ public abstract class VertexPlacementStrategy {
         this.DISTANCE_OFFSET_FACTOR = DISTANCE_OFFSET_FACTOR;
         this.VERTEX_SIZE = VERTEX_SIZE;
         this.CANVAS_SIZE = CANVAS_SIZE;
+        changed = true;
     }
-    public double value(Tuple[] coordinates) {
+    public double value(Vector2D[] coordinates) {
         double value = 0;
         for (int i = 0; i < g.vertexCount(); i++) {
             for (int j = i + 1; j < g.vertexCount(); j++) {
@@ -26,12 +27,12 @@ public abstract class VertexPlacementStrategy {
         }
         return value;
     }
-    public abstract void adjustPlacements(Tuple[] coordinates);
+    public abstract void adjustPlacements(Vector2D[] coordinates);
     public boolean hasChanged() {
         return changed;
     }
 
-    protected double distance(int x, int y, Tuple[] coordinates) {
+    protected double distance(int x, int y, Vector2D[] coordinates) {
         double distance = 0;
         double current = coordinates[x].squaredEuclidian(coordinates[y]);
         if (g.hasEdge(x, y)) {
