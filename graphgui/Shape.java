@@ -10,7 +10,7 @@ public class Shape implements MouseMotionListener {
     private Shape hover;
     private boolean hovered;
     private Polygon model;
-    private Consumer painter;
+    private Consumer<Graphics> painter;
 
     public Shape(String value, Polygon model) {
         mainColor = Color.black;
