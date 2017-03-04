@@ -4,7 +4,7 @@ import graph.*;
 
 public abstract class VertexPlacementStrategy {
     protected Graph g;
-    protected boolean changed;
+    protected boolean changing;
     protected final double MIN_DISTANCE, MAX_DISTANCE, DISTANCE_OFFSET_FACTOR;
     protected final int VERTEX_SIZE, CANVAS_SIZE;
 
@@ -16,7 +16,7 @@ public abstract class VertexPlacementStrategy {
         this.DISTANCE_OFFSET_FACTOR = DISTANCE_OFFSET_FACTOR;
         this.VERTEX_SIZE = VERTEX_SIZE;
         this.CANVAS_SIZE = CANVAS_SIZE;
-        changed = true;
+        changing = true;
     }
     public double value(Vector2D[] coordinates) {
         double value = 0;
@@ -28,8 +28,8 @@ public abstract class VertexPlacementStrategy {
         return value;
     }
     public abstract void adjustPlacements(Vector2D[] coordinates);
-    public boolean hasChanged() {
-        return changed;
+    public boolean changing() {
+        return changing;
     }
 
     protected double distance(int x, int y, Vector2D[] coordinates) {

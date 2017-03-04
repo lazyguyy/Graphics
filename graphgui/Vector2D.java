@@ -50,6 +50,6 @@ public class Vector2D {
     }
 
     public String toString() {
-        return String.format(Locale.US, "(%3.2f,%3.2f)", x, y);
+        return String.format(Locale.US, "(%6.2f, %6.2f)", x, y);
     }
 }
