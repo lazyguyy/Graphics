@@ -3,8 +3,8 @@ package graphgui;
 import graph.*;
 
 public class RandomPlacementStrategy extends VertexPlacementStrategy {
-    public RandomPlacementStrategy(Graph g, double MIN_DISTANCE, double MAX_DISTANCE, double DISTANCE_OFFSET_FACTOR, int VERTEX_SIZE, int CANVAS_SIZE) {
-        super(g, MIN_DISTANCE, MAX_DISTANCE, DISTANCE_OFFSET_FACTOR, VERTEX_SIZE, CANVAS_SIZE);
+    public RandomPlacementStrategy(Graph g, Settings properties) {
+        super(g, properties);
     }
     
     @Override

@@ -5,17 +5,18 @@ import graph.*;
 public abstract class VertexPlacementStrategy {
     protected Graph g;
     protected boolean changing;
-    protected final double MIN_DISTANCE, MAX_DISTANCE, DISTANCE_OFFSET_FACTOR;
-    protected final int VERTEX_SIZE, CANVAS_SIZE;
+    protected final double MIN_DISTANCE, MAX_DISTANCE, DISTANCE_OFFSET_FACTOR, VERTEX_SIZE, CANVAS_SIZE;
+    protected Settings properties;
 
 
-    public VertexPlacementStrategy(Graph g, double MIN_DISTANCE, double MAX_DISTANCE, double DISTANCE_OFFSET_FACTOR, int VERTEX_SIZE, int CANVAS_SIZE) {
+    public VertexPlacementStrategy(Graph g, Settings properties) {
         this.g = g;
-        this.MIN_DISTANCE = MIN_DISTANCE;
-        this.MAX_DISTANCE = MAX_DISTANCE;
-        this.DISTANCE_OFFSET_FACTOR = DISTANCE_OFFSET_FACTOR;
-        this.VERTEX_SIZE = VERTEX_SIZE;
-        this.CANVAS_SIZE = CANVAS_SIZE;
+        this.properties = properties;
+        MAX_DISTANCE = properties.parseAsDoubleOrDefault("MAX_DISTANCE");
+        MIN_DISTANCE = properties.parseAsDoubleOrDefault("MIN_DISTANCE");
+        VERTEX_SIZE = properties.parseAsDoubleOrDefault("VERTEX_SIZE");
+        CANVAS_SIZE = properties.parseAsDoubleOrDefault("CANVAS_SIZE");
+        DISTANCE_OFFSET_FACTOR = properties.parseAsDoubleOrDefault("DISTANCE_OFFSET_FACTOR");
         changing = true;
     }
     public double value(Vector2D[] coordinates) {
