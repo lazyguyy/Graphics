@@ -26,6 +26,10 @@ public class Vector2D {
         return Math.sqrt(squaredAbs());
     }
 
+    public Vector2D add(Vector2D other) {
+        return new Vector2D(x + other.x, y + other.y);
+    }
+    
     public Vector2D diff(Vector2D other) {
         return new Vector2D(x - other.x, y - other.y);
     }

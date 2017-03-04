@@ -7,7 +7,7 @@ import java.awt.*;
 import java.util.function.*;
 
 public class PainterPanel extends JPanel{
-    private final double MIN_DISTANCE = 50, MAX_DISTANCE = 200, DISTANCE_OFFSET_FACTOR = 1.2;
+    private final double MIN_DISTANCE = 50, MAX_DISTANCE = 200, DISTANCE_OFFSET_FACTOR = 1.2, TIP_ANGLE = Math.PI / 4;
     private final int VERTEX_SIZE = 20, CANVAS_SIZE = 1000;
     private Graph g;
     private Vector2D[] coordinates;
@@ -90,12 +90,17 @@ public class PainterPanel extends JPanel{
     }
     
     private Consumer<Graphics> createEdgePainter(Shape edge, WeightedEdge e) {
+        Vector2D direction = coordinates[e.to].diff(coordinates[e.from]).scale(VERTEX_SIZE);
+        Vector2D tip1 = direction.rotate(TIP_ANGLE).scale(VERTEX_SIZE).negate();
+        Vector2D tip2 = direction.rotate(2 * Math.PI - TIP_ANGLE).scale(VERTEX_SIZE).negate();
+        Vector2D pointOfImpact = coordinates[e.to].diff(direction);
+        Vector2D labelPosition = direction.scale(VERTEX_SIZE + MIN_DISTANCE/2).add(coordinates[e.from]);
         return (gr -> {
             gr.setColor(edge.getColor());
             gr.drawLine((int)coordinates[e.from].x, (int)coordinates[e.from].y, (int)coordinates[e.to].x, (int)coordinates[e.to].y);
-            Vector2D direction = coordinates[e.to].diff(coordinates[e.from]).scale(VERTEX_SIZE);
-            gr.drawString(edge.getValue(), (int)(coordinates[e.from].x + direction.scale(VERTEX_SIZE + MIN_DISTANCE/2).x), (int)(coordinates[e.from].y + direction.scale(VERTEX_SIZE + MIN_DISTANCE/2).y));
-            GraphicsHelper.drawArrowTip(gr, coordinates[e.to].diff(direction), direction);
+            gr.drawString(edge.getValue(), (int)labelPosition.x, (int)labelPosition.y);
+            GraphicsHelper.drawLine(gr, pointOfImpact, tip1);
+            GraphicsHelper.drawLine(gr, pointOfImpact, tip2);
         });
     }
 
