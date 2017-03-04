@@ -6,10 +6,11 @@ import java.awt.*;
 import javax.swing.*;
 
 public class GraphFrame extends JFrame {
+    PainterPanel p;
     public GraphFrame(Graph g) {
         super("Graphics");
         setBackground(Color.white);
-        PainterPanel p = new PainterPanel(g, getBackground());
+        p = new PainterPanel(g, getBackground());
         p.init();
         add(p);
         pack();
@@ -22,5 +23,9 @@ public class GraphFrame extends JFrame {
         });
         setLocationRelativeTo(null);
         setVisible(true);
+    }
+    
+    public void update(Graph g) {
+        p.update(g);
     }
 }

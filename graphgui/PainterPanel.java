@@ -15,7 +15,7 @@ public class PainterPanel extends JPanel{
     private ArrayList<Shape> edges;
     private ArrayList<Shape> vertices;
     private Color backgroundColor;
-    private boolean stop;
+    private boolean stop, update;
 
     public PainterPanel(Graph g, Color backgroundColor) {
         this.g = GraphFactory.createListGraph(g);
@@ -23,6 +23,7 @@ public class PainterPanel extends JPanel{
         setPreferredSize(new Dimension(CANVAS_SIZE, CANVAS_SIZE));
         strategy = new RandomPlacementStrategy(g, MIN_DISTANCE, MAX_DISTANCE, DISTANCE_OFFSET_FACTOR, VERTEX_SIZE, CANVAS_SIZE);
         stop = true;
+        update = true;
         edges = new ArrayList<Shape>();
         vertices = new ArrayList<Shape>();
         coordinates = new Vector2D[g.vertexCount()];
@@ -31,11 +32,14 @@ public class PainterPanel extends JPanel{
     public void init() {
         if (!stop)
             return;
-        constructGraphShapes();
         new Thread(() -> {
             stop = false;
             while (!stop) {
                 repaint();
+                if (update) {
+                    constructGraphShapes();
+                    update = false;
+                }
                 try {
                     Thread.sleep(100);
                 } catch (InterruptedException e) {
@@ -97,6 +101,10 @@ public class PainterPanel extends JPanel{
 
     public void stop() {
         stop = true;
+    }
+    
+    public void update(Graph g) {
+        this.g = GraphFactory.createListGraph(g);
     }
     
     @Override
