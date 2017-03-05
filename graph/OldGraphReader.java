@@ -10,7 +10,7 @@ import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-public class GraphReader implements GraphIterable, Iterator<WeightedEdge> {
+public class OldGraphReader implements GraphIterable<VertexNameInfo>, Iterator<WeightedEdge> {
 
     private final int vertexCount;
     private final String[] vertices;
@@ -18,7 +18,7 @@ public class GraphReader implements GraphIterable, Iterator<WeightedEdge> {
     private final Map<String, Integer> vertexNames;
     private String nextLine;
 
-    public GraphReader(Reader inputStream) throws IOException {
+    public OldGraphReader(Reader inputStream) throws IOException {
         reader = new BufferedReader(inputStream);
         String firstLine = reader.readLine();
         if (firstLine.startsWith("#")) {
@@ -80,8 +80,8 @@ public class GraphReader implements GraphIterable, Iterator<WeightedEdge> {
     }
 
     @Override
-    public String[] vertexNames() {
-        return vertices;
+    public VertexNameInfo info() {
+        return () -> vertices;
     }
 
     @Override
