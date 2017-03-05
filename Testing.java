@@ -22,8 +22,9 @@ public class Testing {
                 "belt jacket\n" +
                 "shirt tie\n" +
                 "tie jacket";
-        Graph graph = GraphFactory.createListGraph(GraphIO.read(new StringReader(source2)));
-        Graph graphm = GraphFactory.createMatrixGraph(GraphIO.read(new StringReader(source2)));
+        GraphIterable<?> itr = GraphIO.read(new StringReader(source2));
+        Graph graph = GraphFactory.createListGraph(itr);
+        Graph graphm = GraphFactory.createMatrixGraph(itr);
         Graph c = GraphFactory.createMatrixGraph(GraphIO.read(new StringReader(clothing)));
 
         Locale.setDefault(Locale.US);
