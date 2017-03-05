@@ -54,7 +54,7 @@ public class DirectedForcePlacementStrategy extends VertexPlacementStrategy{
     }
     
     private Vector2D calculateCoulombForce(Vector2D direction) {
-        return direction.scale(properties.getValue("VERTEX_REPULSION").getDouble() / direction.squaredAbs());
+        return direction.scale(properties.getValue("VERTEX_REPULSION").getDouble()*5000 / direction.squaredAbs());
     }
     
     private Vector2D calculateWallForce(Vector2D point) {

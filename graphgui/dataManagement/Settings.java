@@ -19,11 +19,11 @@ public class Settings {
         parsers = new HashMap<String, Function<String, Value>>();
         fillParserMap();
         loadDefaultProperties();
-        loadProperties();
+        properties = new HashMap<String, Value>(defaultProperties);
+//        loadProperties();
     }
     
     private void loadProperties() {
-        properties = new HashMap<String, Value>(defaultProperties);
         try (BufferedReader br = new BufferedReader(new FileReader(filepath))) {
             String line;
             while ((line = br.readLine()) != null) {
@@ -131,9 +131,9 @@ public class Settings {
         defaultProperties.put("CANVAS_SIZE", new Value(1000));
         defaultProperties.put("DISTANCE_OFFSET_FACTOR", new Value(1.1));
         defaultProperties.put("FRAME_NAME", new Value("Graphics"));
-        defaultProperties.put("VERTEX_REPULSION", new Value(5.0));
+        defaultProperties.put("VERTEX_REPULSION", new Value(10.0));
         defaultProperties.put("NEGLIGIBLE_FORCE", new Value(1.0));
-        defaultProperties.put("WALL_FORCE", new Value(100.0));
+        defaultProperties.put("WALL_FORCE", new Value(1000.0));
         defaultProperties.put("EDGE_ATTRACTION", new Value(0.2));
         defaultProperties.put("BEZIER_ACCURACY", new Value(15));
         defaultProperties.put("BEZIER_CURVE", new Value(0.5));

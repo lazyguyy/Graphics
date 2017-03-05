@@ -60,7 +60,12 @@ public class PainterPanel extends JPanel {
     private void constructGraphShapes() {
         placeVertices();
         for (int i = 0; i < g.vertexCount(); i++) {
-            Shape vertex = new Shape(/*g.info().vertexNames()[i]*/"" + i, null);
+            Polygon model = new Polygon();
+            model.addPoint((int)coordinates[i].x - properties.getValue("VERTEX_SIZE").getInt(), (int)coordinates[i].y - properties.getValue("VERTEX_SIZE").getInt());
+            model.addPoint((int)coordinates[i].x + properties.getValue("VERTEX_SIZE").getInt(), (int)coordinates[i].y - properties.getValue("VERTEX_SIZE").getInt());
+            model.addPoint((int)coordinates[i].x + properties.getValue("VERTEX_SIZE").getInt(), (int)coordinates[i].y + properties.getValue("VERTEX_SIZE").getInt());
+            model.addPoint((int)coordinates[i].x - properties.getValue("VERTEX_SIZE").getInt(), (int)coordinates[i].y + properties.getValue("VERTEX_SIZE").getInt());
+            Shape vertex = new Shape(/*g.info().vertexNames()[i]*/"" + i, model);
             vertex.setPainter(createVertexPainter(vertex, i));
             addMouseMotionListener(vertex);
             vertices.add(vertex);
@@ -70,6 +75,9 @@ public class PainterPanel extends JPanel {
                 edge.setPainter(createCurvedEdgePainter(edge, e));
                 edges.add(edge);
                 addMouseMotionListener(edge);
+                Shape hoverEdge = new Shape(edge);
+                hoverEdge.setColor(Color.red);
+                vertex.addHover(hoverEdge);
             }
         }
     }
@@ -83,12 +91,6 @@ public class PainterPanel extends JPanel {
                                            i / verticesPerLine  * vertexDistance + properties.getValue("CANVAS_SIZE").getInt()/4);
         }
         while (strategy.changing() && !stop) {
-//            try {
-//                Thread.sleep(1000);
-//            } catch (InterruptedException e) {
-//                // TODO Auto-generated catch block
-//                e.printStackTrace();
-//            }
             strategy.adjustPlacements(coordinates);
         }
     }
@@ -111,23 +113,6 @@ public class PainterPanel extends JPanel {
         });
 
     }
-
-    private Consumer<Graphics> createEdgePainter(Shape edge, WeightedEdge e) {
-        Vector2D direction = coordinates[e.to].diff(coordinates[e.from]).scale(properties.getValue("VERTEX_SIZE").getInt());
-        // The arrow tip
-        Vector2D tip1 = direction.rotate(toRadians(properties.getValue("TIP_ANGLE").getDouble())).scale(properties.getValue("VERTEX_SIZE").getInt()).negate();
-        Vector2D tip2 = direction.rotate(2 * Math.PI - toRadians(properties.getValue("TIP_ANGLE").getDouble())).scale(properties.getValue("VERTEX_SIZE").getInt()).negate();
-        Vector2D pointOfImpact = coordinates[e.to].diff(direction);
-        Vector2D labelPosition = direction.scale(properties.getValue("VERTEX_SIZE").getInt() + properties.getValue("MIN_DISTANCE").getInt() / 2).add(coordinates[e.from]);
-        return (gr -> {
-            gr.setColor(edge.getColor());
-            gr.drawLine((int) coordinates[e.from].x, (int) coordinates[e.from].y, (int) coordinates[e.to].x,
-                    (int) coordinates[e.to].y);
-            gr.drawString(edge.getValue(), (int) labelPosition.x - edge.getValue().length()*3, (int) labelPosition.y);
-            GraphicsHelper.drawLineInDirection(gr, pointOfImpact, tip1);
-            GraphicsHelper.drawLineInDirection(gr, pointOfImpact, tip2);
-        });
-    }
     
     private Consumer<Graphics> createCurvedEdgePainter(Shape edge, WeightedEdge e) {
         Vector2D direction = coordinates[e.to].diff(coordinates[e.from]);
@@ -140,14 +125,12 @@ public class PainterPanel extends JPanel {
         Vector2D tip1 = tipDirection.rotate(toRadians(properties.getValue("TIP_ANGLE").getDouble())).scale(properties.getValue("VERTEX_SIZE").getInt()/2).negate();
         Vector2D tip2 = tipDirection.rotate(2 * Math.PI - toRadians(properties.getValue("TIP_ANGLE").getDouble())).scale(properties.getValue("VERTEX_SIZE").getInt()/2).negate();
         return (gr -> {
-            gr.setColor(edge.getColor());
+            Color c = gr.getColor();
             GraphicsHelper.drawPolyLine(gr, bezierPoints);
-//            gr.setColor(Color.red);
-//            GraphicsHelper.drawPolyLine(gr, controlPoints);
             gr.setColor(Color.gray);
             GraphicsHelper.drawLineInDirection(gr, labelPosition, tip1);
             GraphicsHelper.drawLineInDirection(gr, labelPosition, tip2);
-            gr.setColor(Color.black);
+            gr.setColor(c);
             gr.drawString(edge.getValue(), (int)labelPosition.x, (int)labelPosition.y);
         });
     }
