@@ -76,7 +76,7 @@ public class PainterPanel extends JPanel {
             model.addPoint((int)coordinates[i].x + properties.getValue("VERTEX_SIZE").getInt(), (int)coordinates[i].y - properties.getValue("VERTEX_SIZE").getInt());
             model.addPoint((int)coordinates[i].x + properties.getValue("VERTEX_SIZE").getInt(), (int)coordinates[i].y + properties.getValue("VERTEX_SIZE").getInt());
             model.addPoint((int)coordinates[i].x - properties.getValue("VERTEX_SIZE").getInt(), (int)coordinates[i].y + properties.getValue("VERTEX_SIZE").getInt());
-            Shape vertex = new Shape(/*g.info().vertexNames()[i]*/"" + i, model);
+            Shape vertex = new Shape(g.info().vertexName(i), model);
             vertex.setPainter(createVertexPainter(vertex, i));
             addMouseMotionListener(vertex);
             vertices.add(vertex);
@@ -127,14 +127,19 @@ public class PainterPanel extends JPanel {
     }
     
     private Consumer<Graphics> createCurvedEdgePainter(Shape edge, WeightedEdge e) {
+    	//Directio of the edge
         Vector2D direction = coordinates[e.to].diff(coordinates[e.from]);
+        //Control point for Bezier curve
         Vector2D controlPoint = coordinates[e.from].add(direction.rotate(Math.PI / 2).scaleBy(properties.getValue("BEZIER_CURVE").getDouble()).add(direction.scaleBy(0.5)));
         Vector2D[] controlPoints = {coordinates[e.from], controlPoint, coordinates[e.to]};
+        //Beziercurve, approximated by polyline
         Vector2D[] bezierPoints = DeCasteljau.calculateBezierPoints(controlPoints, properties.getValue("BEZIER_ACCURACY").getInt());
+        //the arrow tip
         Vector2D tipPosition = bezierPoints[bezierPoints.length/2 + 1];
         Vector2D tipDirection = tipPosition.diff(bezierPoints[bezierPoints.length/2]);
         Vector2D tip1 = tipDirection.rotate(toRadians(properties.getValue("TIP_ANGLE").getDouble())).scale(properties.getValue("VERTEX_SIZE").getInt()).negate();
         Vector2D tip2 = tipDirection.rotate(2 * Math.PI - toRadians(properties.getValue("TIP_ANGLE").getDouble())).scale(properties.getValue("VERTEX_SIZE").getInt()).negate();
+        //position of label
         Vector2D labelPosition = tipPosition.add(tipDirection.rotate(Math.PI / 2).scale(properties.getValue("VERTEX_SIZE").getInt()));
         return (gr -> {
             Color c = gr.getColor();
@@ -142,7 +147,7 @@ public class PainterPanel extends JPanel {
             gr.setColor(Color.gray);
             GraphicsHelper.drawLineInDirection(gr, tipPosition, tip1);
             GraphicsHelper.drawLineInDirection(gr, tipPosition, tip2);
-            gr.setColor(new Color((int)(c.getRed()*0.8), (int)(c.getGreen()*0.8), (int)(c.getBlue()*0.8)));
+            gr.setColor(new Color((int)((255 + c.getRed())*0.25), (int)((255 + c.getGreen())*0.25), (int)((255 + c.getBlue())*0.25)));
             gr.drawString(edge.getValue(), (int)(labelPosition.x + tip1.x + tip2.x), (int)(labelPosition.y + tip1.y));
         });
     }
