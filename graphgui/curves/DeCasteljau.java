@@ -1,7 +1,5 @@
 package graphgui.curves;
 
-import java.util.Arrays;
-
 import graphgui.*;
 
 public class DeCasteljau {
