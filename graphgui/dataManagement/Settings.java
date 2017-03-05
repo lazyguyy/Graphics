@@ -20,7 +20,7 @@ public class Settings {
         fillParserMap();
         loadDefaultProperties();
         properties = new HashMap<String, Value>(defaultProperties);
-//        loahdProperties();
+        loadProperties();
     }
     
     private void loadProperties() {

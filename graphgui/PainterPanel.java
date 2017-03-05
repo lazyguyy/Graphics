@@ -127,19 +127,14 @@ public class PainterPanel extends JPanel {
     }
     
     private Consumer<Graphics> createCurvedEdgePainter(Shape edge, WeightedEdge e) {
-    	//Directio of the edge
         Vector2D direction = coordinates[e.to].diff(coordinates[e.from]);
-        //Control point for Bezier curve
         Vector2D controlPoint = coordinates[e.from].add(direction.rotate(Math.PI / 2).scaleBy(properties.getValue("BEZIER_CURVE").getDouble()).add(direction.scaleBy(0.5)));
         Vector2D[] controlPoints = {coordinates[e.from], controlPoint, coordinates[e.to]};
-        //Beziercurve, approximated by polyline
         Vector2D[] bezierPoints = DeCasteljau.calculateBezierPoints(controlPoints, properties.getValue("BEZIER_ACCURACY").getInt());
-        //the arrow tip
         Vector2D tipPosition = bezierPoints[bezierPoints.length/2 + 1];
         Vector2D tipDirection = tipPosition.diff(bezierPoints[bezierPoints.length/2]);
         Vector2D tip1 = tipDirection.rotate(toRadians(properties.getValue("TIP_ANGLE").getDouble())).scale(properties.getValue("VERTEX_SIZE").getInt()).negate();
         Vector2D tip2 = tipDirection.rotate(2 * Math.PI - toRadians(properties.getValue("TIP_ANGLE").getDouble())).scale(properties.getValue("VERTEX_SIZE").getInt()).negate();
-        //position of label
         Vector2D labelPosition = tipPosition.add(tipDirection.rotate(Math.PI / 2).scale(properties.getValue("VERTEX_SIZE").getInt()));
         return (gr -> {
             Color c = gr.getColor();

@@ -77,9 +77,7 @@ public class DirectedForcePlacementStrategy extends VertexPlacementStrategy{
     }
     
     private Vector2D calculateSpringForce(double weight, Vector2D direction) {
-    	System.out.println(weight + ", " + direction);
         double optimalDistance = scale(weight);
-        System.out.println(optimalDistance);
         Vector2D springForce = direction.scale(optimalDistance).diff(direction);
         return springForce;
     }
