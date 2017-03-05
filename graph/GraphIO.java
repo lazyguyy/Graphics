@@ -61,8 +61,8 @@ public class GraphIO {
 
     private static void write(Writer output, GraphIterable<? extends VertexNameInfo> itr) throws IOException {
         try (BufferedWriter writer = new BufferedWriter(output)) {
-            for (String v : itr.info().vertexNames())
-                writer.append(v + " ");
+            for (int i = 0; i < itr.vertexCount(); i++)
+                writer.append(itr.info().vertexName(i) + " ");
             writer.append("\n");
             for (WeightedEdge e : itr)
                 writer.append(String.format("%s %s %s\n", e.from, e.to, e.weight));
@@ -83,7 +83,7 @@ public class GraphIO {
 
         @Override
         public VertexNameInfo info() {
-            return () -> vertexNames;
+            return i -> vertexNames[i];
         }
 
         @Override

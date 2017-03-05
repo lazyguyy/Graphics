@@ -2,5 +2,5 @@
 package graph;
 
 public interface VertexNameInfo {
-    public String[] vertexNames();
+    public String vertexName(int vertex);
 }
