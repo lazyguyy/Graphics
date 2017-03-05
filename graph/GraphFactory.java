@@ -11,7 +11,7 @@ public abstract class GraphFactory {
     }
 
     public static <I extends VertexNameInfo> String stringify(GraphIterable<I> itr) {
-        StringBuilder sb = new StringBuilder("     ");
+        StringBuilder sb = new StringBuilder("         ");
         String[] vertexNames = itr.info().vertexNames();
         int n = itr.vertexCount();
         double[] edges = new double[n * n];
@@ -25,14 +25,14 @@ public abstract class GraphFactory {
         }
 
         for (int i = 0; i < n; i++) {
-            sb.append(String.format("%8s ", vertexNames[i]));
+            sb.append(String.format("%8.8s ", vertexNames[i]));
         }
         sb.append("\n");
         for (int i = 0; i < n; i++) {
-            sb.append(String.format("%6s ", vertexNames[i]));
+            sb.append(String.format("%8.8s ", vertexNames[i]));
 
             for (int j = i * n; j < i * n + n; j++) {
-                sb.append(Double.isFinite(edges[j]) ? String.format("%8s ", edges[j]) : "       - ");
+                sb.append(Double.isFinite(edges[j]) ? String.format("%8.8s ", edges[j]) : "       - ");
             }
             sb.append("\n");
         }
