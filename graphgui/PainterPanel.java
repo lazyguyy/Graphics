@@ -120,18 +120,19 @@ public class PainterPanel extends JPanel {
         Vector2D controlPoint = coordinates[e.from].add(direction.rotate(Math.PI / 2).scaleBy(properties.getValue("BEZIER_CURVE").getDouble()).add(direction.scaleBy(0.5)));
         Vector2D[] controlPoints = {coordinates[e.from], controlPoint, coordinates[e.to]};
         Vector2D[] bezierPoints = DeCasteljau.calculateBezierPoints(controlPoints, properties.getValue("BEZIER_ACCURACY").getInt());
-        Vector2D labelPosition = bezierPoints[bezierPoints.length/2 + 1];
-        Vector2D tipDirection = labelPosition.diff(bezierPoints[bezierPoints.length/2]);
+        Vector2D tipPosition = bezierPoints[bezierPoints.length/2 + 1];
+        Vector2D tipDirection = tipPosition.diff(bezierPoints[bezierPoints.length/2]);
         Vector2D tip1 = tipDirection.rotate(toRadians(properties.getValue("TIP_ANGLE").getDouble())).scale(properties.getValue("VERTEX_SIZE").getInt()/2).negate();
         Vector2D tip2 = tipDirection.rotate(2 * Math.PI - toRadians(properties.getValue("TIP_ANGLE").getDouble())).scale(properties.getValue("VERTEX_SIZE").getInt()/2).negate();
+        Vector2D labelPosition = tipPosition.add(tipDirection.rotate(Math.PI / 2).scale(properties.getValue("VERTEX_SIZE").getInt()/2));
         return (gr -> {
             Color c = gr.getColor();
             GraphicsHelper.drawPolyLine(gr, bezierPoints);
             gr.setColor(Color.gray);
-            GraphicsHelper.drawLineInDirection(gr, labelPosition, tip1);
-            GraphicsHelper.drawLineInDirection(gr, labelPosition, tip2);
+            GraphicsHelper.drawLineInDirection(gr, tipPosition, tip1);
+            GraphicsHelper.drawLineInDirection(gr, tipPosition, tip2);
             gr.setColor(c);
-            gr.drawString(edge.getValue(), (int)labelPosition.x, (int)labelPosition.y);
+            gr.drawString(edge.getValue(), (int)(labelPosition.x + tip1.x), (int)(labelPosition.y + tip1.y));
         });
     }
 
