@@ -135,6 +135,8 @@ public class Settings {
         defaultProperties.put("NEGLIGIBLE_FORCE", new Value(1.0));
         defaultProperties.put("WALL_FORCE", new Value(100.0));
         defaultProperties.put("EDGE_ATTRACTION", new Value(0.2));
+        defaultProperties.put("BEZIER_ACCURACY", new Value(15));
+        defaultProperties.put("BEZIER_CURVE", new Value(0.5));
     }
     
     private void fillParserMap() {
@@ -149,6 +151,8 @@ public class Settings {
         parsers.put("NEGLIGIBLE_FORCE", parseDouble);
         parsers.put("WALL_FORCE", parseDouble);
         parsers.put("EDGE_ATTRACTION", parseDouble);
+        parsers.put("BEZIER_ACCURACY", parseInt);
+        parsers.put("BEZIER_CURVE", parseDouble);
     }
     
     private void loadDefaults() {

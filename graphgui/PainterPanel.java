@@ -1,6 +1,7 @@
 package graphgui;
 
 import graph.*;
+import graphgui.curves.*;
 import graphgui.dataManagement.Settings;
 import graphgui.strategy.*;
 import java.awt.image.*;
@@ -29,7 +30,7 @@ public class PainterPanel extends JPanel {
         vertices = new ArrayList<Shape>();
         coordinates = new Vector2D[g.vertexCount()];
         properties = new Settings("guiproperties.txt");
-        properties.printProperties();
+//        properties.printProperties();
         setPreferredSize(new Dimension(properties.getValue("CANVAS_SIZE").getInt(), properties.getValue("CANVAS_SIZE").getInt()));
         buffer = new BufferedImage(properties.getValue("CANVAS_SIZE").getInt(), properties.getValue("CANVAS_SIZE").getInt(), BufferedImage.TYPE_INT_RGB);
     }
@@ -66,7 +67,7 @@ public class PainterPanel extends JPanel {
             // Add all the edges
             for (WeightedEdge e : g.adjacency(i)) {
                 Shape edge = new Shape("" + e.weight, null);
-                edge.setPainter(createEdgePainter(edge, e));
+                edge.setPainter(createCurvedEdgePainter(edge, e));
                 edges.add(edge);
                 addMouseMotionListener(edge);
             }
@@ -123,8 +124,31 @@ public class PainterPanel extends JPanel {
             gr.drawLine((int) coordinates[e.from].x, (int) coordinates[e.from].y, (int) coordinates[e.to].x,
                     (int) coordinates[e.to].y);
             gr.drawString(edge.getValue(), (int) labelPosition.x - edge.getValue().length()*3, (int) labelPosition.y);
-            GraphicsHelper.drawLine(gr, pointOfImpact, tip1);
-            GraphicsHelper.drawLine(gr, pointOfImpact, tip2);
+            GraphicsHelper.drawLineInDirection(gr, pointOfImpact, tip1);
+            GraphicsHelper.drawLineInDirection(gr, pointOfImpact, tip2);
+        });
+    }
+    
+    private Consumer<Graphics> createCurvedEdgePainter(Shape edge, WeightedEdge e) {
+        Vector2D direction = coordinates[e.to].diff(coordinates[e.from]);
+        System.out.println(direction);
+        Vector2D controlPoint = coordinates[e.from].add(direction.rotate(Math.PI / 2).scaleBy(properties.getValue("BEZIER_CURVE").getDouble()).add(direction.scaleBy(0.5)));
+        Vector2D[] controlPoints = {coordinates[e.from], controlPoint, coordinates[e.to]};
+        Vector2D[] bezierPoints = DeCasteljau.calculateBezierPoints(controlPoints, properties.getValue("BEZIER_ACCURACY").getInt());
+        Vector2D labelPosition = bezierPoints[bezierPoints.length/2 + 1];
+        Vector2D tipDirection = labelPosition.diff(bezierPoints[bezierPoints.length/2]);
+        Vector2D tip1 = tipDirection.rotate(toRadians(properties.getValue("TIP_ANGLE").getDouble())).scale(properties.getValue("VERTEX_SIZE").getInt()/2).negate();
+        Vector2D tip2 = tipDirection.rotate(2 * Math.PI - toRadians(properties.getValue("TIP_ANGLE").getDouble())).scale(properties.getValue("VERTEX_SIZE").getInt()/2).negate();
+        return (gr -> {
+            gr.setColor(edge.getColor());
+            GraphicsHelper.drawPolyLine(gr, bezierPoints);
+//            gr.setColor(Color.red);
+//            GraphicsHelper.drawPolyLine(gr, controlPoints);
+            gr.setColor(Color.gray);
+            GraphicsHelper.drawLineInDirection(gr, labelPosition, tip1);
+            GraphicsHelper.drawLineInDirection(gr, labelPosition, tip2);
+            gr.setColor(Color.black);
+            gr.drawString(edge.getValue(), (int)labelPosition.x, (int)labelPosition.y);
         });
     }
 
