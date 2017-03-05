@@ -1,7 +1,7 @@
 
 package graph;
 
-public interface GraphIterable extends Iterable<WeightedEdge> {
-    public String[] vertexNames();
+public interface GraphIterable<I> extends Iterable<WeightedEdge> {
+    public I info();
     public int vertexCount();
 }

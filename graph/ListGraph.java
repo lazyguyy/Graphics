@@ -4,11 +4,11 @@ package graph;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-class ListGraph extends AbstractGraph {
+class ListGraph<I> extends AbstractGraph<I> {
 
     private final Node[] graph;
 
-    public ListGraph(GraphIterable itr) {
+    public ListGraph(GraphIterable<I> itr) {
         super(itr);
         int n = itr.vertexCount();
         graph = new Node[n];
@@ -41,15 +41,15 @@ class ListGraph extends AbstractGraph {
 
     @Override
     protected Iterator<WeightedEdge> adjacencyIterator(int from) {
-        return new AdjacencyIterator(from);
+        return new ListGraphIterator(from);
     }
 
-    private class AdjacencyIterator implements Iterator<WeightedEdge> {
+    private class ListGraphIterator implements Iterator<WeightedEdge> {
 
         private Node itr;
         private final int from;
 
-        public AdjacencyIterator(int from) {
+        public ListGraphIterator(int from) {
             this.from = from;
             this.itr = graph[from];
         }

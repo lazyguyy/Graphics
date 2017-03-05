@@ -1,25 +1,28 @@
 
 package graph;
 
+import java.io.Serializable;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-abstract class AbstractGraph implements Graph {
+abstract class AbstractGraph<I> implements Graph<I>, Serializable {
 
-    private final String[] vertexNames;
+    private final I info;
+    private final int vertexCount;
 
-    public AbstractGraph(GraphIterable itr) {
-        vertexNames = itr.vertexNames();
+    public AbstractGraph(GraphIterable<I> itr) {
+        info = itr.info();
+        vertexCount = itr.vertexCount();
     }
 
     @Override
-    public String[] vertexNames() {
-        return vertexNames;
+    public I info() {
+        return info;
     }
 
     @Override
     public int vertexCount() {
-        return vertexNames.length;
+        return vertexCount;
     }
 
     protected abstract Iterator<WeightedEdge> adjacencyIterator(int from);
@@ -77,28 +80,5 @@ abstract class AbstractGraph implements Graph {
             advance();
             return edge;
         }
-    }
-
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder("     ");
-        int n = vertexCount();
-        for (int i = 0; i < n; i++) {
-            sb.append(String.format("%8s ", vertexNames()[i]));
-        }
-        sb.append("\n");
-        for (int i = 0; i < n; i++) {
-            sb.append(String.format("%4s ", vertexNames()[i]));
-
-            String[] edges = new String[n];
-            for (WeightedEdge e : adjacency(i)) {
-                edges[e.to] = String.format("%8s ", e.weight);
-            }
-            for (String s : edges) {
-                sb.append(s == null ? "       - " : s);
-            }
-            sb.append("\n");
-        }
-        return sb.toString();
     }
 }
