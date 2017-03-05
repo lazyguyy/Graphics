@@ -7,17 +7,27 @@ import graphgui.dataManagement.*;
 
 public class DirectedForcePlacementStrategy extends VertexPlacementStrategy{
     Vector2D[] forces;
+    private double min, max;
+    
     
     public DirectedForcePlacementStrategy(Graph<VertexNameInfo> g, Settings properties) {
         super(g, properties);
         forces = new Vector2D[g.vertexCount()];
+        min = Double.POSITIVE_INFINITY;
+        max = Double.NEGATIVE_INFINITY;
     }
 
     @Override
     public void adjustPlacements(Vector2D[] coordinates) {
         //Initially, each force is zero.
-        for (int i = 0; i < forces.length; i++) {
+    	for (int i = 0; i < forces.length; i++) {
             forces[i] = new Vector2D(0, 0);
+            for (WeightedEdge e : g.adjacency(i)) {
+            	if (e.weight < min)
+            		min = e.weight;
+            	else if (e.weight > max) 
+            		max = e.weight;
+            }
         }
         //Calculate the forces effecting each Vertex.
         //Vertices are repulsive to each other, edges create attraction.
@@ -47,8 +57,12 @@ public class DirectedForcePlacementStrategy extends VertexPlacementStrategy{
         
     }
     
+    private double scale(double distance) {
+    	return (distance - min)/(max - min)*(properties.getValue("MAX_DISTANCE").getInt() - properties.getValue("MIN_DISTANCE").getInt()) + properties.getValue("MIN_DISTANCE").getInt();
+    }
+    
     private Vector2D calculateSpringForce(double weight, Vector2D direction) {
-        double optimalDistance = scaledSigmoid(weight, properties.getValue("MIN_DISTANCE").getInt(), properties.getValue("MAX_DISTANCE").getInt());
+        double optimalDistance = scale(weight);
         Vector2D springForce = direction.scale(optimalDistance).diff(direction);
         return springForce;
     }

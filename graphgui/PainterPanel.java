@@ -20,6 +20,7 @@ public class PainterPanel extends JPanel {
     private boolean stop, update;
     private BufferedImage buffer;
     private Settings properties;
+    private boolean finished;
     
     public PainterPanel(Graph<VertexNameInfo> g, Color backgroundColor) {
         this.g = GraphFactory.createListGraph(g);
@@ -43,6 +44,7 @@ public class PainterPanel extends JPanel {
             while (!stop) {
                 repaintScreen();
                 if (update) {
+                	finished = false;
                     new Thread(() -> {
                         constructGraphShapes();
                     }).start();
@@ -59,7 +61,13 @@ public class PainterPanel extends JPanel {
 
     private void constructGraphShapes() {
         placeVertices();
-        for (int i = 0; i < g.vertexCount(); i++) {
+        createShapes();
+    }
+    
+    private void createShapes() {
+        edges = new ArrayList<Shape>();
+        vertices = new ArrayList<Shape>();
+    	for (int i = 0; i < g.vertexCount(); i++) {
             Polygon model = new Polygon();
             model.addPoint((int)coordinates[i].x - properties.getValue("VERTEX_SIZE").getInt(), (int)coordinates[i].y - properties.getValue("VERTEX_SIZE").getInt());
             model.addPoint((int)coordinates[i].x + properties.getValue("VERTEX_SIZE").getInt(), (int)coordinates[i].y - properties.getValue("VERTEX_SIZE").getInt());
@@ -80,6 +88,7 @@ public class PainterPanel extends JPanel {
                 vertex.addHover(hoverEdge);
             }
         }
+    	finished = true;
     }
 
     private void placeVertices() {
@@ -128,7 +137,7 @@ public class PainterPanel extends JPanel {
         return (gr -> {
             Color c = gr.getColor();
             GraphicsHelper.drawPolyLine(gr, bezierPoints);
-            gr.setColor(Color.gray);
+            gr.setColor(Color.darkGray);
             GraphicsHelper.drawLineInDirection(gr, tipPosition, tip1);
             GraphicsHelper.drawLineInDirection(gr, tipPosition, tip2);
             gr.setColor(c);
@@ -170,7 +179,7 @@ public class PainterPanel extends JPanel {
     }
     
     public void draw(Graphics g) {
-        if (vertices.size() == 0) {
+        if (!finished) {
             g.setColor(Color.black);
             for (Vector2D point : coordinates) {
                 if (point != null)
@@ -181,11 +190,13 @@ public class PainterPanel extends JPanel {
             }
             g.drawString("Calculating optimal alignment", 50, 50);
         }
-        for (Shape e : edges) {
-            e.draw(g);
-        }
-        for (Shape v : vertices) {
-            v.draw(g);
+        else {
+            for (Shape e : edges) {
+                e.draw(g);
+            }
+            for (Shape v : vertices) {
+                v.draw(g);
+            }	
         }
     }
 }

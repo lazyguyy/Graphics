@@ -20,7 +20,7 @@ public class Settings {
         fillParserMap();
         loadDefaultProperties();
         properties = new HashMap<String, Value>(defaultProperties);
-//        loadProperties();
+        loadProperties();
     }
     
     private void loadProperties() {
@@ -125,14 +125,14 @@ public class Settings {
     
     private void loadDefaultProperties() {
         defaultProperties.put("VERTEX_SIZE", new Value(20));
-        defaultProperties.put("MIN_DISTANCE", new Value(100));
-        defaultProperties.put("MAX_DISTANCE", new Value(400));
+        defaultProperties.put("MIN_DISTANCE", new Value(250));
+        defaultProperties.put("MAX_DISTANCE", new Value(600));
         defaultProperties.put("TIP_ANGLE", new Value(45.0));
         defaultProperties.put("CANVAS_SIZE", new Value(1000));
         defaultProperties.put("DISTANCE_OFFSET_FACTOR", new Value(1.1));
         defaultProperties.put("FRAME_NAME", new Value("Graphics"));
-        defaultProperties.put("VERTEX_REPULSION", new Value(15.0));
-        defaultProperties.put("NEGLIGIBLE_FORCE", new Value(1.0));
+        defaultProperties.put("VERTEX_REPULSION", new Value(12.0));
+        defaultProperties.put("NEGLIGIBLE_FORCE", new Value(0.5));
         defaultProperties.put("WALL_FORCE", new Value(1000.0));
         defaultProperties.put("EDGE_ATTRACTION", new Value(0.2));
         defaultProperties.put("BEZIER_ACCURACY", new Value(15));

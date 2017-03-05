@@ -13,7 +13,6 @@ public class GraphFrame extends JFrame {
         super("Graphics");
         setBackground(Color.white);
         p = new PainterPanel(g, getBackground());
-        p.init();
         add(p);
         pack();
         addWindowListener(new WindowAdapter() {
@@ -25,6 +24,7 @@ public class GraphFrame extends JFrame {
         });
         setLocationRelativeTo(null);
         setVisible(true);
+        p.init();
     }
     
     public void updateGraph(Graph g) {
