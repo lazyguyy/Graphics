@@ -5,7 +5,7 @@ import graphgui.*;
 import graphgui.dataManagement.*;
 
 public class RandomPlacementStrategy extends VertexPlacementStrategy {
-    public RandomPlacementStrategy(Graph<VertexNameInfo> g, Settings properties) {
+    public RandomPlacementStrategy(Graph<? extends VertexNameInfo> g, Settings properties) {
         super(g, properties);
     }
     

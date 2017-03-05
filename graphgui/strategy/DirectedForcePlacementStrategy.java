@@ -10,7 +10,7 @@ public class DirectedForcePlacementStrategy extends VertexPlacementStrategy{
     private double min, max;
     
     
-    public DirectedForcePlacementStrategy(Graph<VertexNameInfo> g, Settings properties) {
+    public DirectedForcePlacementStrategy(Graph<? extends VertexNameInfo> g, Settings properties) {
         super(g, properties);
         forces = new Vector2D[g.vertexCount()];
         min = Double.POSITIVE_INFINITY;

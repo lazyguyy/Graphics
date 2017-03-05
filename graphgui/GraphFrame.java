@@ -9,7 +9,7 @@ import javax.swing.*;
 
 public class GraphFrame extends JFrame {
     PainterPanel p;
-    public GraphFrame(Graph g) {
+    public GraphFrame(Graph<? extends VertexNameInfo> g) {
         super("Graphics");
         setBackground(Color.white);
         p = new PainterPanel(g, getBackground());

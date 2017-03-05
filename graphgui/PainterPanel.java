@@ -11,7 +11,7 @@ import java.awt.*;
 import java.util.function.*;
 
 public class PainterPanel extends JPanel {
-    private Graph<VertexNameInfo> g;
+    private Graph<? extends VertexNameInfo> g;
     private Vector2D[] coordinates;
     private VertexPlacementStrategy strategy;
     private ArrayList<Shape> edges;
@@ -22,7 +22,7 @@ public class PainterPanel extends JPanel {
     private Settings properties;
     private boolean finished;
     
-    public PainterPanel(Graph<VertexNameInfo> g, Color backgroundColor) {
+    public PainterPanel(Graph<? extends VertexNameInfo> g, Color backgroundColor) {
         this.g = GraphFactory.createListGraph(g);
         this.backgroundColor = backgroundColor;
         stop = true;
