@@ -5,7 +5,7 @@ import graphgui.*;
 import graphgui.dataManagement.*;
 
 public class RandomPlacementStrategy extends VertexPlacementStrategy {
-    public RandomPlacementStrategy(Graph g, Settings properties) {
+    public RandomPlacementStrategy(Graph<VertexNameInfo> g, Settings properties) {
         super(g, properties);
     }
     
@@ -16,8 +16,7 @@ public class RandomPlacementStrategy extends VertexPlacementStrategy {
                           + properties.getValue("VERTEX_SIZE").getInt());
             int y = (int)(Math.random()*(properties.getValue("CANVAS_SIZE").getInt() -  2*properties.getValue("VERTEX_SIZE").getInt())
                           + properties.getValue("VERTEX_SIZE").getInt());
-            coordinates[i].x = x;
-            coordinates[i].y = y;
+            coordinates[i] = new Vector2D(x, y);
         }
         changing = false;
         for (int i = 0; i < coordinates.length; i++) {

@@ -5,12 +5,12 @@ import graphgui.*;
 import graphgui.dataManagement.*;
 
 public abstract class VertexPlacementStrategy {
-    protected Graph g;
+    protected Graph<VertexNameInfo> g;
     protected boolean changing;
     protected Settings properties;
 
 
-    public VertexPlacementStrategy(Graph g, Settings properties) {
+    public VertexPlacementStrategy(Graph<VertexNameInfo> g, Settings properties) {
         this.g = g;
         this.properties = properties;
         changing = true;

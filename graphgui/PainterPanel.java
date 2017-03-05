@@ -10,7 +10,7 @@ import java.awt.*;
 import java.util.function.*;
 
 public class PainterPanel extends JPanel {
-    private Graph g;
+    private Graph<VertexNameInfo> g;
     private Vector2D[] coordinates;
     private VertexPlacementStrategy strategy;
     private ArrayList<Shape> edges;
@@ -20,7 +20,7 @@ public class PainterPanel extends JPanel {
     private BufferedImage buffer;
     private Settings properties;
     
-    public PainterPanel(Graph g, Color backgroundColor) {
+    public PainterPanel(Graph<VertexNameInfo> g, Color backgroundColor) {
         this.g = GraphFactory.createListGraph(g);
         this.backgroundColor = backgroundColor;
         stop = true;
@@ -59,7 +59,7 @@ public class PainterPanel extends JPanel {
     private void constructGraphShapes() {
         placeVertices();
         for (int i = 0; i < g.vertexCount(); i++) {
-            Shape vertex = new Shape(g.vertexNames()[i], null);
+            Shape vertex = new Shape(/*g.info().vertexNames()[i]*/"" + i, null);
             vertex.setPainter(createVertexPainter(vertex, i));
             addMouseMotionListener(vertex);
             vertices.add(vertex);
@@ -82,12 +82,12 @@ public class PainterPanel extends JPanel {
                                            i / verticesPerLine  * vertexDistance + properties.getValue("CANVAS_SIZE").getInt()/4);
         }
         while (strategy.changing() && !stop) {
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
+//            try {
+//                Thread.sleep(1000);
+//            } catch (InterruptedException e) {
+//                // TODO Auto-generated catch block
+//                e.printStackTrace();
+//            }
             strategy.adjustPlacements(coordinates);
         }
     }

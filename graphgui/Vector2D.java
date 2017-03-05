@@ -3,7 +3,7 @@ package graphgui;
 import java.util.*;
 
 public class Vector2D {
-    public double x, y;
+    public final double x, y;
 
     public Vector2D(double x, double y) {
         this.x = x;
@@ -41,6 +41,10 @@ public class Vector2D {
     public Vector2D scale(double scale) {
         double scaleFactor = scale / absolute();
         return new Vector2D(x * scaleFactor, y * scaleFactor);
+    }
+    
+    public Vector2D scaleBy(double scale) {
+        return new Vector2D(x * scale, y * scale);
     }
 
     public Vector2D rotate(double angle) {

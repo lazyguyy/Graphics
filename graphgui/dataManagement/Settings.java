@@ -132,8 +132,9 @@ public class Settings {
         defaultProperties.put("DISTANCE_OFFSET_FACTOR", new Value(1.1));
         defaultProperties.put("FRAME_NAME", new Value("Graphics"));
         defaultProperties.put("VERTEX_REPULSION", new Value(5.0));
-        defaultProperties.put("NEGLIGIBLE_FORCE", new Value(0.01));
+        defaultProperties.put("NEGLIGIBLE_FORCE", new Value(1.0));
         defaultProperties.put("WALL_FORCE", new Value(100.0));
+        defaultProperties.put("EDGE_ATTRACTION", new Value(0.2));
     }
     
     private void fillParserMap() {
@@ -147,6 +148,7 @@ public class Settings {
         parsers.put("VERTEX_REPULSION", parseDouble);
         parsers.put("NEGLIGIBLE_FORCE", parseDouble);
         parsers.put("WALL_FORCE", parseDouble);
+        parsers.put("EDGE_ATTRACTION", parseDouble);
     }
     
     private void loadDefaults() {
