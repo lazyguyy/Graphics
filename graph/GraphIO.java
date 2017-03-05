@@ -73,7 +73,7 @@ public class GraphIO {
 
         private final Iterable<WeightedEdge> edges;
         private final int vertexCount;
-        private String[] vertexNames;
+        private final String[] vertexNames;
 
         public NamedVertexEdgeList(int vertexCount, Iterable<WeightedEdge> edges, String[] vertexNames) {
             this.edges = edges;

@@ -29,7 +29,7 @@ public abstract class GraphFactory {
         }
         sb.append("\n");
         for (int i = 0; i < n; i++) {
-            sb.append(String.format("%4s ", vertexNames[i]));
+            sb.append(String.format("%6s ", vertexNames[i]));
 
             for (int j = i * n; j < i * n + n; j++) {
                 sb.append(Double.isFinite(edges[j]) ? String.format("%8s ", edges[j]) : "       - ");
