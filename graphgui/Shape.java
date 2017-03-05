@@ -36,13 +36,15 @@ public class Shape implements MouseMotionListener {
         return value;
     }
 
+    @Override
     public void mouseMoved(MouseEvent e) {
         if (model != null)
             hovered = model.contains(e.getX(), e.getY());
     }
 
-	public void mouseDragged(MouseEvent arg0) {
-		// TODO Auto-generated method stub
-		
-	}
+    @Override
+    public void mouseDragged(MouseEvent arg0) {
+        // TODO Auto-generated method stub
+
+    }
 }
