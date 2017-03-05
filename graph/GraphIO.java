@@ -56,7 +56,7 @@ public class GraphIO {
             }
         }
 
-        return new NamedVertexEdgeList(vertexCount, edges);
+        return new NamedVertexEdgeList(vertexCount, edges, vertices);
     }
 
     private static void write(Writer output, GraphIterable<? extends VertexNameInfo> itr) throws IOException {
@@ -75,9 +75,10 @@ public class GraphIO {
         private final int vertexCount;
         private String[] vertexNames;
 
-        public NamedVertexEdgeList(int vertexCount, Iterable<WeightedEdge> edges) {
+        public NamedVertexEdgeList(int vertexCount, Iterable<WeightedEdge> edges, String[] vertexNames) {
             this.edges = edges;
             this.vertexCount = vertexCount;
+            this.vertexNames = vertexNames;
         }
 
         @Override
