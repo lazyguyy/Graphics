@@ -1,6 +1,8 @@
 package graphgui;
 
 import graph.*;
+import graphgui.dataManagement.Settings;
+import graphgui.strategy.*;
 import java.awt.image.*;
 import javax.swing.*;
 import java.util.*;
@@ -28,10 +30,8 @@ public class PainterPanel extends JPanel {
         coordinates = new Vector2D[g.vertexCount()];
         properties = new Settings("guiproperties.txt");
         properties.printProperties();
-        int CANVAS_SIZE = (int)properties.parseAsDoubleOrDefault("CANVAS_SIZE");
-        setPreferredSize(new Dimension(CANVAS_SIZE, CANVAS_SIZE));
-        buffer = new BufferedImage(CANVAS_SIZE, CANVAS_SIZE, BufferedImage.TYPE_INT_RGB);
-        strategy = new RandomPlacementStrategy(g, properties);
+        setPreferredSize(new Dimension(properties.getValue("CANVAS_SIZE").getInt(), properties.getValue("CANVAS_SIZE").getInt()));
+        buffer = new BufferedImage(properties.getValue("CANVAS_SIZE").getInt(), properties.getValue("CANVAS_SIZE").getInt(), BufferedImage.TYPE_INT_RGB);
     }
 
     public void init() {
@@ -74,14 +74,20 @@ public class PainterPanel extends JPanel {
     }
 
     private void placeVertices() {
-        int VERTEX_SIZE = (int)properties.parseAsDoubleOrDefault("VERTEX_SIZE");
-        int MIN_DISTANCE = (int)properties.parseAsDoubleOrDefault("MIN_DISTANCE");
         int verticesPerLine = (int) Math.floor(Math.sqrt(coordinates.length)) + 1;
+        double vertexDistance = properties.getValue("CANVAS_SIZE").getInt() / 2 / verticesPerLine;
+        strategy = new DirectedForcePlacementStrategy(g, properties);
         for (int i = 0; i < coordinates.length; i++) {
-            coordinates[i] = new Vector2D((i % verticesPerLine) * MIN_DISTANCE + VERTEX_SIZE,
-                    i / verticesPerLine * MIN_DISTANCE + VERTEX_SIZE);
+            coordinates[i] = new Vector2D((i % verticesPerLine) * vertexDistance + properties.getValue("CANVAS_SIZE").getInt()/4,
+                                           i / verticesPerLine  * vertexDistance + properties.getValue("CANVAS_SIZE").getInt()/4);
         }
         while (strategy.changing() && !stop) {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
             strategy.adjustPlacements(coordinates);
         }
     }
@@ -89,27 +95,29 @@ public class PainterPanel extends JPanel {
     private Consumer<Graphics> createVertexPainter(Shape vertex, int index) {
         double x = coordinates[index].x;
         double y = coordinates[index].y;
-        int VERTEX_SIZE = (int)properties.parseAsDoubleOrDefault("VERTEX_SIZE");
         return (gr -> {
             gr.setColor(backgroundColor);
-            gr.fillOval((int) x - VERTEX_SIZE, (int) y - VERTEX_SIZE, VERTEX_SIZE * 2, VERTEX_SIZE * 2);
+            gr.fillOval((int) x - properties.getValue("VERTEX_SIZE").getInt(), 
+                        (int) y - properties.getValue("VERTEX_SIZE").getInt(), 
+                                  properties.getValue("VERTEX_SIZE").getInt() * 2, 
+                                  properties.getValue("VERTEX_SIZE").getInt() * 2);
             gr.setColor(vertex.getColor());
-            gr.drawOval((int) x - VERTEX_SIZE, (int) y - VERTEX_SIZE, VERTEX_SIZE * 2, VERTEX_SIZE * 2);
+            gr.drawOval((int) x - properties.getValue("VERTEX_SIZE").getInt(), 
+                        (int) y - properties.getValue("VERTEX_SIZE").getInt(), 
+                                  properties.getValue("VERTEX_SIZE").getInt() * 2, 
+                                  properties.getValue("VERTEX_SIZE").getInt() * 2);
             gr.drawString(vertex.getValue(), (int) x, (int) y);
         });
 
     }
 
     private Consumer<Graphics> createEdgePainter(Shape edge, WeightedEdge e) {
-        int VERTEX_SIZE = (int)properties.parseAsDoubleOrDefault("VERTEX_SIZE");
-        int MIN_DISTANCE = (int)properties.parseAsDoubleOrDefault("MIN_DISTANCE");
-        double TIP_ANGLE = properties.parseAsDoubleOrDefault("TIP_ANGLE") / 180 * Math.PI;
-        Vector2D direction = coordinates[e.to].diff(coordinates[e.from]).scale(VERTEX_SIZE);
+        Vector2D direction = coordinates[e.to].diff(coordinates[e.from]).scale(properties.getValue("VERTEX_SIZE").getInt());
         // The arrow tip
-        Vector2D tip1 = direction.rotate(TIP_ANGLE).scale(VERTEX_SIZE).negate();
-        Vector2D tip2 = direction.rotate(2 * Math.PI - TIP_ANGLE).scale(VERTEX_SIZE).negate();
+        Vector2D tip1 = direction.rotate(toRadians(properties.getValue("TIP_ANGLE").getDouble())).scale(properties.getValue("VERTEX_SIZE").getInt()).negate();
+        Vector2D tip2 = direction.rotate(2 * Math.PI - toRadians(properties.getValue("TIP_ANGLE").getDouble())).scale(properties.getValue("VERTEX_SIZE").getInt()).negate();
         Vector2D pointOfImpact = coordinates[e.to].diff(direction);
-        Vector2D labelPosition = direction.scale(VERTEX_SIZE + MIN_DISTANCE / 2).add(coordinates[e.from]);
+        Vector2D labelPosition = direction.scale(properties.getValue("VERTEX_SIZE").getInt() + properties.getValue("MIN_DISTANCE").getInt() / 2).add(coordinates[e.from]);
         return (gr -> {
             gr.setColor(edge.getColor());
             gr.drawLine((int) coordinates[e.from].x, (int) coordinates[e.from].y, (int) coordinates[e.to].x,
@@ -123,19 +131,28 @@ public class PainterPanel extends JPanel {
     public void stop() {
         stop = true;
     }
+    
+    private double toRadians(double degree) {
+        return degree / 180 * Math.PI;
+    }
 
-    public void update(Graph g) {
+    public void updateGraph(Graph g) {
         this.g = GraphFactory.createListGraph(g);
+        update = true;
+    }
+    
+    public void updateProperties(Settings properties) {
+        this.properties = properties;
+        update = true;
     }
     
     private void repaintScreen() {
-        int CANVAS_SIZE = (int)properties.parseAsDoubleOrDefault("CANVAS_SIZE");
         if (buffer == null) {
             return;
         }
         Graphics renderGraphics = buffer.getGraphics();
         renderGraphics.setColor(backgroundColor);
-        renderGraphics.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+        renderGraphics.fillRect(0, 0, properties.getValue("CANVAS_SIZE").getInt(), properties.getValue("CANVAS_SIZE").getInt());
         draw(renderGraphics);
         renderGraphics.dispose();
         Graphics g = this.getGraphics();
@@ -146,11 +163,13 @@ public class PainterPanel extends JPanel {
     
     public void draw(Graphics g) {
         if (vertices.size() == 0) {
-            int VERTEX_SIZE = (int)properties.parseAsDoubleOrDefault("VERTEX_SIZE");
             g.setColor(Color.black);
             for (Vector2D point : coordinates) {
                 if (point != null)
-                    g.drawOval((int)point.x - VERTEX_SIZE, (int)point.y - VERTEX_SIZE, 2*VERTEX_SIZE, 2*VERTEX_SIZE);
+                    g.drawOval((int)point.x - properties.getValue("VERTEX_SIZE").getInt(), 
+                               (int)point.y - properties.getValue("VERTEX_SIZE").getInt(), 
+                               2*properties.getValue("VERTEX_SIZE").getInt(), 
+                               2*properties.getValue("VERTEX_SIZE").getInt());
             }
             g.drawString("Calculating optimal alignment", 50, 50);
         }

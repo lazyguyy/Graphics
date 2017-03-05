@@ -1,6 +1,8 @@
 package graphgui;
 
 import graph.*;
+import graphgui.dataManagement.Settings;
+
 import java.awt.event.*;
 import java.awt.*;
 import javax.swing.*;
@@ -25,7 +27,11 @@ public class GraphFrame extends JFrame {
         setVisible(true);
     }
     
-    public void update(Graph g) {
-        p.update(g);
+    public void updateGraph(Graph g) {
+        p.updateGraph(g);
+    }
+    
+    public void updateProperties(Settings p) {
+        this.p.updateProperties(p);
     }
 }
