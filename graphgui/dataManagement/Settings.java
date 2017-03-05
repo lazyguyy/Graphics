@@ -20,7 +20,7 @@ public class Settings {
         fillParserMap();
         loadDefaultProperties();
         properties = new HashMap<String, Value>(defaultProperties);
-        loadProperties();
+//        loahdProperties();
     }
     
     private void loadProperties() {
@@ -131,7 +131,7 @@ public class Settings {
         defaultProperties.put("CANVAS_SIZE", new Value(1000));
         defaultProperties.put("DISTANCE_OFFSET_FACTOR", new Value(1.1));
         defaultProperties.put("FRAME_NAME", new Value("Graphics"));
-        defaultProperties.put("VERTEX_REPULSION", new Value(12.0));
+        defaultProperties.put("VERTEX_REPULSION", new Value(20.0));
         defaultProperties.put("NEGLIGIBLE_FORCE", new Value(0.5));
         defaultProperties.put("WALL_FORCE", new Value(1000.0));
         defaultProperties.put("EDGE_ATTRACTION", new Value(0.2));

@@ -4,8 +4,11 @@ import graph.*;
 import graphgui.curves.*;
 import graphgui.dataManagement.Settings;
 import graphgui.strategy.*;
+
 import java.awt.image.*;
+
 import javax.swing.*;
+
 import java.util.*;
 import java.awt.*;
 import java.util.function.*;
@@ -125,23 +128,22 @@ public class PainterPanel extends JPanel {
     
     private Consumer<Graphics> createCurvedEdgePainter(Shape edge, WeightedEdge e) {
         Vector2D direction = coordinates[e.to].diff(coordinates[e.from]);
-        System.out.println(direction);
         Vector2D controlPoint = coordinates[e.from].add(direction.rotate(Math.PI / 2).scaleBy(properties.getValue("BEZIER_CURVE").getDouble()).add(direction.scaleBy(0.5)));
         Vector2D[] controlPoints = {coordinates[e.from], controlPoint, coordinates[e.to]};
         Vector2D[] bezierPoints = DeCasteljau.calculateBezierPoints(controlPoints, properties.getValue("BEZIER_ACCURACY").getInt());
         Vector2D tipPosition = bezierPoints[bezierPoints.length/2 + 1];
         Vector2D tipDirection = tipPosition.diff(bezierPoints[bezierPoints.length/2]);
-        Vector2D tip1 = tipDirection.rotate(toRadians(properties.getValue("TIP_ANGLE").getDouble())).scale(properties.getValue("VERTEX_SIZE").getInt()/2).negate();
-        Vector2D tip2 = tipDirection.rotate(2 * Math.PI - toRadians(properties.getValue("TIP_ANGLE").getDouble())).scale(properties.getValue("VERTEX_SIZE").getInt()/2).negate();
-        Vector2D labelPosition = tipPosition.add(tipDirection.rotate(Math.PI / 2).scale(properties.getValue("VERTEX_SIZE").getInt()/2));
+        Vector2D tip1 = tipDirection.rotate(toRadians(properties.getValue("TIP_ANGLE").getDouble())).scale(properties.getValue("VERTEX_SIZE").getInt()).negate();
+        Vector2D tip2 = tipDirection.rotate(2 * Math.PI - toRadians(properties.getValue("TIP_ANGLE").getDouble())).scale(properties.getValue("VERTEX_SIZE").getInt()).negate();
+        Vector2D labelPosition = tipPosition.add(tipDirection.rotate(Math.PI / 2).scale(properties.getValue("VERTEX_SIZE").getInt()));
         return (gr -> {
             Color c = gr.getColor();
             GraphicsHelper.drawPolyLine(gr, bezierPoints);
-            gr.setColor(Color.darkGray);
+            gr.setColor(Color.gray);
             GraphicsHelper.drawLineInDirection(gr, tipPosition, tip1);
             GraphicsHelper.drawLineInDirection(gr, tipPosition, tip2);
-            gr.setColor(c);
-            gr.drawString(edge.getValue(), (int)(labelPosition.x + tip1.x), (int)(labelPosition.y + tip1.y));
+            gr.setColor(new Color((int)(c.getRed()*0.8), (int)(c.getGreen()*0.8), (int)(c.getBlue()*0.8)));
+            gr.drawString(edge.getValue(), (int)(labelPosition.x + tip1.x + tip2.x), (int)(labelPosition.y + tip1.y));
         });
     }
 
@@ -153,7 +155,7 @@ public class PainterPanel extends JPanel {
         return degree / 180 * Math.PI;
     }
 
-    public void updateGraph(Graph g) {
+    public void updateGraph(Graph<? extends VertexNameInfo> g) {
         this.g = GraphFactory.createListGraph(g);
         update = true;
     }
@@ -167,7 +169,7 @@ public class PainterPanel extends JPanel {
         if (buffer == null) {
             return;
         }
-        Graphics renderGraphics = buffer.getGraphics();
+        Graphics2D renderGraphics = (Graphics2D) buffer.getGraphics();
         renderGraphics.setColor(backgroundColor);
         renderGraphics.fillRect(0, 0, properties.getValue("CANVAS_SIZE").getInt(), properties.getValue("CANVAS_SIZE").getInt());
         draw(renderGraphics);
@@ -178,7 +180,9 @@ public class PainterPanel extends JPanel {
         Toolkit.getDefaultToolkit().sync();
     }
     
-    public void draw(Graphics g) {
+    public void draw(Graphics2D g) {
+    	g.setStroke(new BasicStroke(2));
+    	g.setFont(new Font("Arial", Font.BOLD, 12));
         if (!finished) {
             g.setColor(Color.black);
             for (Vector2D point : coordinates) {

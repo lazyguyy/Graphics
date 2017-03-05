@@ -41,7 +41,7 @@ public class Shape implements MouseMotionListener {
         this.painter = painter;
     }
 
-    public void draw(Graphics g) {
+    public void draw(Graphics2D g) {
         if (hovered && hover != null) {
             for (Shape h : hover) {
                 h.draw(g);

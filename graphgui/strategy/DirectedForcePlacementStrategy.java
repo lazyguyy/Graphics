@@ -3,6 +3,7 @@ package graphgui.strategy;
 import graph.*;
 import graphgui.*;
 import graphgui.dataManagement.*;
+import java.util.*;
 
 
 public class DirectedForcePlacementStrategy extends VertexPlacementStrategy{
@@ -15,6 +16,14 @@ public class DirectedForcePlacementStrategy extends VertexPlacementStrategy{
         forces = new Vector2D[g.vertexCount()];
         min = Double.POSITIVE_INFINITY;
         max = Double.NEGATIVE_INFINITY;
+        for (int i = 0; i < g.vertexCount(); i++) {
+        	for (WeightedEdge e : g.adjacency(i)) {
+            	if (e.weight < min)
+            		min = e.weight;
+            	else if (e.weight > max) 
+            		max = e.weight;
+        	}
+        }
     }
 
     @Override
@@ -22,13 +31,14 @@ public class DirectedForcePlacementStrategy extends VertexPlacementStrategy{
         //Initially, each force is zero.
     	for (int i = 0; i < forces.length; i++) {
             forces[i] = new Vector2D(0, 0);
-            for (WeightedEdge e : g.adjacency(i)) {
-            	if (e.weight < min)
-            		min = e.weight;
-            	else if (e.weight > max) 
-            		max = e.weight;
-            }
         }
+    	
+    	ArrayList<Vector2D> edges = new ArrayList<>();
+    	for (WeightedEdge e : g) {
+    		Vector2D from = coordinates[e.from];
+    		Vector2D to = coordinates[e.to];
+    		edges.add(from.add(to).scaleBy(0.5));
+    	}
         //Calculate the forces effecting each Vertex.
         //Vertices are repulsive to each other, edges create attraction.
         for (int i = 0; i < forces.length; i++) {
@@ -45,6 +55,9 @@ public class DirectedForcePlacementStrategy extends VertexPlacementStrategy{
                 forces[j] = forces[j].add(coulombForce);
                 forces[i] = forces[i].add(coulombForce.negate());
             }
+            for (Vector2D edge : edges) {
+            	forces[i] = forces[i].add(calculateCoulombForce(coordinates[i].diff(edge)));
+            }
             forces[i] = forces[i].add(calculateWallForce(coordinates[i]));
         }
         //Apply each force to the respective vertex
@@ -58,11 +71,15 @@ public class DirectedForcePlacementStrategy extends VertexPlacementStrategy{
     }
     
     private double scale(double distance) {
+    	if (max == min)
+    		return (properties.getValue("MAX_DISTANCE").getInt() + properties.getValue("MIN_DISTANCE").getInt())/2;
     	return (distance - min)/(max - min)*(properties.getValue("MAX_DISTANCE").getInt() - properties.getValue("MIN_DISTANCE").getInt()) + properties.getValue("MIN_DISTANCE").getInt();
     }
     
     private Vector2D calculateSpringForce(double weight, Vector2D direction) {
+    	System.out.println(weight + ", " + direction);
         double optimalDistance = scale(weight);
+        System.out.println(optimalDistance);
         Vector2D springForce = direction.scale(optimalDistance).diff(direction);
         return springForce;
     }
