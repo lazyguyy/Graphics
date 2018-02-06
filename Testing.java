@@ -22,7 +22,7 @@ public class Testing {
                 "belt jacket\n" +
                 "shirt tie\n" +
                 "tie jacket";
-        GraphIterable<?> itr = GraphIO.read(new StringReader(source2));
+        GraphIterable<?> itr = GraphIO.read(new StringReader(source));
         Graph graph = GraphFactory.createListGraph(itr);
         Graph graphm = GraphFactory.createMatrixGraph(itr);
         Graph c = GraphFactory.createMatrixGraph(GraphIO.read(new StringReader(clothing)));
@@ -30,7 +30,7 @@ public class Testing {
         Locale.setDefault(Locale.US);
         System.out.println(GraphFactory.stringify(graph));
         System.out.println(GraphFactory.stringify(c));
-        new GraphFrame(c);
+        new GraphFrame(graphm);
 
         System.out.println(Arrays.toString(ShortestPaths.BellmanFord(graph, 0)));
         System.out.println(Arrays.toString(ShortestPaths.BellmanFord(graphm, 0)));
